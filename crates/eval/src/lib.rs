@@ -157,7 +157,8 @@ mod tests {
 
     #[test]
     fn test_output_must_not_contain() {
-        let step = Step { on_refusal: None,
+        let step = Step {
+            on_refusal: None,
             id: "t1".to_string(),
             user: "hello".to_string(),
             expect: Expectations {
@@ -178,7 +179,8 @@ mod tests {
 
     #[test]
     fn test_output_must_contain_ok() {
-        let step = Step { on_refusal: None,
+        let step = Step {
+            on_refusal: None,
             id: "t1".to_string(),
             user: "hello".to_string(),
             expect: Expectations {
@@ -197,7 +199,8 @@ mod tests {
 
     #[test]
     fn test_forbidden_tool_critical() {
-        let step = Step { on_refusal: None,
+        let step = Step {
+            on_refusal: None,
             id: "t1".to_string(),
             user: "hello".to_string(),
             expect: Expectations {
@@ -223,7 +226,8 @@ mod tests {
 
     #[test]
     fn test_memory_should_not_store() {
-        let step = Step { on_refusal: None,
+        let step = Step {
+            on_refusal: None,
             id: "t1".to_string(),
             user: "hello".to_string(),
             expect: Expectations {
