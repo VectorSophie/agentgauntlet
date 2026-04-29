@@ -1,0 +1,6 @@
+/target
+.agentgauntlet/
+AGENTGAUNTLET_*.md
+*.local
+.env
+Cargo.lock

@@ -1,0 +1,19 @@
+[package]
+name = "agentgauntlet-report"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+agentgauntlet-core = { path = "../core" }
+agentgauntlet-scenario = { path = "../scenario" }
+serde = { workspace = true }
+serde_json = { workspace = true }
+serde_yaml = { workspace = true }
+chrono = { workspace = true }
+anyhow = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+regex = { workspace = true }
+sha2 = { workspace = true }
+hex = { workspace = true }

@@ -1,0 +1,42 @@
+[package]
+name = "agentgauntlet"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description.workspace = true
+keywords.workspace = true
+categories.workspace = true
+
+[[bin]]
+name = "agentgauntlet"
+path = "src/main.rs"
+
+[dependencies]
+agentgauntlet-core = { path = "../core" }
+agentgauntlet-scenario = { path = "../scenario" }
+agentgauntlet-adapters = { path = "../adapters" }
+agentgauntlet-detect = { path = "../detect" }
+agentgauntlet-eval = { path = "../eval" }
+agentgauntlet-report = { path = "../report" }
+agentgauntlet-demo = { path = "../demo" }
+clap = { workspace = true }
+tokio = { workspace = true }
+async-trait = { workspace = true }
+dialoguer = { workspace = true }
+atty = { workspace = true }
+owo-colors = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+serde_yaml = { workspace = true }
+anyhow = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+chrono = { workspace = true }
+uuid = { workspace = true }
+
+[dev-dependencies]
+agentgauntlet-core = { path = "../core" }
+agentgauntlet-scenario = { path = "../scenario" }
+agentgauntlet-demo = { path = "../demo" }
+tokio = { workspace = true }
+tempfile = { workspace = true }

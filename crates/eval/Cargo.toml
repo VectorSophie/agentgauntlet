@@ -1,0 +1,18 @@
+[package]
+name = "agentgauntlet-eval"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+agentgauntlet-core = { path = "../core" }
+agentgauntlet-scenario = { path = "../scenario" }
+serde = { workspace = true }
+serde_json = { workspace = true }
+regex = { workspace = true }
+anyhow = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+
+[dev-dependencies]
+tokio = { workspace = true }

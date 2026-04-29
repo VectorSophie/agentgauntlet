@@ -1,0 +1,19 @@
+[package]
+name = "agentgauntlet-demo"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+agentgauntlet-core = { path = "../core" }
+agentgauntlet-scenario = { path = "../scenario" }
+agentgauntlet-adapters = { path = "../adapters" }
+agentgauntlet-eval = { path = "../eval" }
+agentgauntlet-report = { path = "../report" }
+tokio = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+serde_yaml = { workspace = true }
+uuid = { workspace = true }
+anyhow = { workspace = true }
+tracing = { workspace = true }

@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cargo build *)",
+      "Bash(cargo test *)",
+      "Bash(cargo run *)",
+      "Bash(python3 *)",
+      "Bash(awk '{sum+=$1; count++} END {print sum/count}')",
+      "Bash(cargo clippy *)",
+      "Bash(grep \"this \\\\`impl\\\\`\" -A5)",
+      "Bash(cargo fmt *)",
+      "Bash(awk '{sum+=$1; count++} END {printf \"avg=%.1f total=%d\\\\n\", sum/count, count}')",
+      "Bash(curl -s http://localhost:1234/v1/models)",
+      "Bash(opencode --version)",
+      "Bash(where opencode *)",
+      "Bash(opencode --help)",
+      "Bash(opencode run *)",
+      "Bash(opencode models *)",
+      "Bash(opencode providers *)",
+      "Bash(curl -s \"https://opencode.ai/config.json\")",
+      "Bash(echo \"EXIT:$?\")",
+      "Bash(curl *)",
+      "Bash(git init *)",
+      "Bash(git remote *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)"
+    ]
+  }
+}
