@@ -1,18 +1,18 @@
 pub mod agent;
 pub mod cli;
 pub mod http;
+pub mod mcp;
 pub mod ollama;
 pub mod openai_compat;
 pub mod stateless_cli;
-pub mod mcp;
 
 pub use agent::Agent;
 pub use cli::{BuiltinAgent, BuiltinAgentFn, CliAgent};
 pub use http::HttpAgent;
+pub use mcp::McpAdapter;
 pub use ollama::OllamaAdapter;
 pub use openai_compat::OpenAiCompatAdapter;
 pub use stateless_cli::StatelessCliAdapter;
-pub use mcp::McpAdapter;
 
 use agentgauntlet_core::types::AgentResponse;
 use anyhow::Result;

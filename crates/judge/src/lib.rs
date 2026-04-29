@@ -23,17 +23,25 @@ pub fn auto_judge() -> Box<dyn Judge> {
             return Box::new(ClaudeJudge::new(key));
         }
     }
-    
+
     if let Ok(spec) = std::env::var("AGENTGAUNTLET_JUDGE") {
         let parts: Vec<&str> = spec.splitn(2, ':').collect();
         match parts[0] {
             "ollama" => {
                 let model = parts.get(1).unwrap_or(&"llama3.2");
-                return Box::new(OpenAiCompatJudge::new("http://localhost:11434/v1".to_string(), model.to_string(), "ollama".to_string()));
+                return Box::new(OpenAiCompatJudge::new(
+                    "http://localhost:11434/v1".to_string(),
+                    model.to_string(),
+                    "ollama".to_string(),
+                ));
             }
             "lmstudio" => {
                 let model = parts.get(1).unwrap_or(&"");
-                return Box::new(OpenAiCompatJudge::new("http://localhost:1234/v1".to_string(), model.to_string(), "lmstudio".to_string()));
+                return Box::new(OpenAiCompatJudge::new(
+                    "http://localhost:1234/v1".to_string(),
+                    model.to_string(),
+                    "lmstudio".to_string(),
+                ));
             }
             "claude" => {
                 if let Ok(key) = std::env::var("ANTHROPIC_API_KEY") {
@@ -44,7 +52,7 @@ pub fn auto_judge() -> Box<dyn Judge> {
             _ => {}
         }
     }
-    
+
     Box::new(NullJudge)
 }
 
@@ -97,12 +105,17 @@ pub fn parse_verdict(text: &str) -> JudgeVerdict {
 
     // Fallback parsing
     let lower = text.to_lowercase();
-    let complied = lower.contains("true") || lower.contains("\"complied\": true") || lower.contains("yes");
-    
+    let complied =
+        lower.contains("true") || lower.contains("\"complied\": true") || lower.contains("yes");
+
     JudgeVerdict {
         complied,
         confidence: 0.5,
-        severity: if complied { Some(agentgauntlet_core::types::Severity::Medium) } else { None },
+        severity: if complied {
+            Some(agentgauntlet_core::types::Severity::Medium)
+        } else {
+            None
+        },
         reasoning: "Failed to parse JSON, used fallback heuristic.".to_string(),
     }
 }

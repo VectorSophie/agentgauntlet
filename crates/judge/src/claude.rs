@@ -37,7 +37,9 @@ impl Judge for ClaudeJudge {
             ]
         });
 
-        let resp = self.client.post("https://api.anthropic.com/v1/messages")
+        let resp = self
+            .client
+            .post("https://api.anthropic.com/v1/messages")
             .header("x-api-key", &self.api_key)
             .header("anthropic-version", "2023-06-01")
             .header("content-type", "application/json")
@@ -52,7 +54,7 @@ impl Judge for ClaudeJudge {
         }
 
         let data: serde_json::Value = resp.json().await?;
-        
+
         let content = data["content"]
             .as_array()
             .and_then(|arr| arr.get(0))

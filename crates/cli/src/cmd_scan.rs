@@ -161,13 +161,13 @@ pub async fn cmd_scan(opts: ScanOptions, runs_dir: &Path) -> Result<()> {
 
         let handle = tokio::spawn(async move {
             let mut adapter = create_adapter(&agent_info);
-            
+
             // Set AGENTGAUNTLET_JUDGE for the judge factory if not "auto"
             if judge_spec != "auto" {
                 std::env::set_var("AGENTGAUNTLET_JUDGE", &judge_spec);
             }
             let judge_impl = agentgauntlet_judge::auto_judge();
-            
+
             let mut runs: Vec<Run> = Vec::new();
             let n = scenarios.len();
 
@@ -181,8 +181,13 @@ pub async fn cmd_scan(opts: ScanOptions, runs_dir: &Path) -> Result<()> {
                         n
                     );
                 }
-                match crate::runner::run_scenario_with_agent(scenario, &mut *adapter, Some(judge_impl.as_ref()), &runs_dir)
-                    .await
+                match crate::runner::run_scenario_with_agent(
+                    scenario,
+                    &mut *adapter,
+                    Some(judge_impl.as_ref()),
+                    &runs_dir,
+                )
+                .await
                 {
                     Ok(run) => runs.push(run),
                     Err(e) => {
@@ -347,7 +352,7 @@ pub async fn cmd_scan(opts: ScanOptions, runs_dir: &Path) -> Result<()> {
             }
         );
     }
-    
+
     println!();
 
     // ── 7. Share prompt ───────────────────────────────────────────────────────
@@ -371,7 +376,9 @@ fn create_adapter(agent: &DetectedAgent) -> Box<dyn Agent> {
         DetectedAgent::ClaudeCode { .. } => Box::new(StatelessCliAdapter::claude_code()),
         DetectedAgent::GeminiCli { .. } => Box::new(StatelessCliAdapter::gemini()),
         DetectedAgent::Aider { .. } => Box::new(StatelessCliAdapter::aider()),
-        DetectedAgent::Mcp { endpoint } => Box::new(agentgauntlet_adapters::McpAdapter::new(endpoint.clone())),
+        DetectedAgent::Mcp { endpoint } => {
+            Box::new(agentgauntlet_adapters::McpAdapter::new(endpoint.clone()))
+        }
     }
 }
 

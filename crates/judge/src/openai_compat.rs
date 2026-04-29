@@ -46,7 +46,9 @@ impl Judge for OpenAiCompatJudge {
 
         let url = format!("{}/chat/completions", self.base_url.trim_end_matches('/'));
 
-        let resp = self.client.post(&url)
+        let resp = self
+            .client
+            .post(&url)
             .header("content-type", "application/json")
             .json(&body)
             .send()
@@ -59,7 +61,7 @@ impl Judge for OpenAiCompatJudge {
         }
 
         let data: serde_json::Value = resp.json().await?;
-        
+
         let content = data["choices"]
             .as_array()
             .and_then(|arr| arr.get(0))

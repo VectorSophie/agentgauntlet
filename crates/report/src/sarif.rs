@@ -48,12 +48,15 @@ pub fn write_sarif(results: &[AgentResults], output_path: &Path) -> Result<()> {
             }
         }
 
-        let rule_objects: Vec<_> = rules.into_iter().map(|r| {
-            json!({
-                "id": r,
-                "helpUri": "https://github.com/VectorSophie/agentgauntlet/tree/main/docs"
+        let rule_objects: Vec<_> = rules
+            .into_iter()
+            .map(|r| {
+                json!({
+                    "id": r,
+                    "helpUri": "https://github.com/VectorSophie/agentgauntlet/tree/main/docs"
+                })
             })
-        }).collect();
+            .collect();
 
         runs.push(json!({
             "tool": {

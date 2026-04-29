@@ -6,8 +6,8 @@ pub mod markdown;
 pub mod sarif;
 
 pub use agent_report::{write_agent_report, AgentResults};
-pub use sarif::write_sarif;
 pub use comparison::{write_comparison, AgentSummary};
+pub use sarif::write_sarif;
 
 use agentgauntlet_core::types::Run;
 use agentgauntlet_scenario::schema::Scenario;

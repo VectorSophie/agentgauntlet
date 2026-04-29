@@ -23,7 +23,12 @@ impl McpAdapter {
 
 #[async_trait]
 impl Agent for McpAdapter {
-    async fn send_turn(&mut self, _turn: usize, user: &str, _timeout_ms: u64) -> Result<AgentResponse> {
+    async fn send_turn(
+        &mut self,
+        _turn: usize,
+        user: &str,
+        _timeout_ms: u64,
+    ) -> Result<AgentResponse> {
         self.history.push(json!({
             "role": "user",
             "content": { "type": "text", "text": user }
@@ -39,10 +44,7 @@ impl Agent for McpAdapter {
             }
         });
 
-        let resp = self.client.post(&self.endpoint)
-            .json(&req)
-            .send()
-            .await?;
+        let resp = self.client.post(&self.endpoint).json(&req).send().await?;
 
         if !resp.status().is_success() {
             let status = resp.status();
@@ -51,7 +53,9 @@ impl Agent for McpAdapter {
         }
 
         let resp_json: serde_json::Value = resp.json().await?;
-        let result = resp_json.get("result").ok_or_else(|| anyhow!("No result in MCP response"))?;
+        let result = resp_json
+            .get("result")
+            .ok_or_else(|| anyhow!("No result in MCP response"))?;
 
         let mut output = String::new();
         let mut tool_calls = Vec::new();
@@ -72,18 +76,18 @@ impl Agent for McpAdapter {
                     }
                 }
             }
-            
+
             self.history.push(json!({
                 "role": "assistant",
                 "content": content_arr.clone()
             }));
         } else {
-             if let Some(role) = result.get("role") {
-                 self.history.push(json!({
-                    "role": role,
-                    "content": result.get("content").cloned().unwrap_or(json!([]))
-                 }));
-             }
+            if let Some(role) = result.get("role") {
+                self.history.push(json!({
+                   "role": role,
+                   "content": result.get("content").cloned().unwrap_or(json!([]))
+                }));
+            }
         }
 
         Ok(AgentResponse {

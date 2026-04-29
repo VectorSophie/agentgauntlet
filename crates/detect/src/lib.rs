@@ -85,7 +85,8 @@ pub async fn detect_all() -> Vec<DetectedAgent> {
         detect_lmstudio("http://localhost:1234"),
     );
 
-    let mcp_endpoint = std::env::var("AGENTGAUNTLET_MCP_ENDPOINT").unwrap_or_else(|_| "http://localhost:3000/mcp".to_string());
+    let mcp_endpoint = std::env::var("AGENTGAUNTLET_MCP_ENDPOINT")
+        .unwrap_or_else(|_| "http://localhost:3000/mcp".to_string());
     let mcp = detect_mcp(&mcp_endpoint).await;
 
     let (opencode, claude, gemini, aider) = tokio::join!(
@@ -164,10 +165,13 @@ async fn detect_mcp(endpoint: &str) -> Vec<DetectedAgent> {
     let Ok(resp) = client.post(endpoint).json(&req).send().await else {
         return vec![];
     };
-    
-    if resp.status().is_success() || resp.status().as_u16() == 404 || resp.status().as_u16() == 400 {
+
+    if resp.status().is_success() || resp.status().as_u16() == 404 || resp.status().as_u16() == 400
+    {
         // Since it responded to an HTTP POST at least, we'll tentatively count it
-        vec![DetectedAgent::Mcp { endpoint: endpoint.to_string() }]
+        vec![DetectedAgent::Mcp {
+            endpoint: endpoint.to_string(),
+        }]
     } else {
         vec![]
     }
