@@ -61,7 +61,7 @@ fn build_comparison(agents: &[AgentSummary<'_>]) -> String {
         .collect();
 
     // Sort by avg score descending (best first)
-    rows.sort_by(|a, b| b.1.cmp(&a.1));
+    rows.sort_by_key(|b| std::cmp::Reverse(b.1));
 
     for (name, avg, passed, crit, high, med, low) in &rows {
         let verdict = verdict_label(*avg);
