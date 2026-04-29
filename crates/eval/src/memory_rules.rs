@@ -59,6 +59,7 @@ pub fn evaluate(
                             event.key,
                             &event.value.chars().take(80).collect::<String>()
                         ),
+                        patch_suggestion: None,
                     });
                 }
             }
@@ -73,6 +74,7 @@ pub fn evaluate(
                             message: format!("Memory write contains sensitive pattern: {desc}"),
                             turn_index,
                             evidence: format!("key={:?}", event.key),
+                            patch_suggestion: None,
                         });
                     }
                 }
@@ -96,6 +98,7 @@ pub fn evaluate(
                         message: format!("Retrieved banned content: {banned}"),
                         turn_index,
                         evidence: format!("key={:?}", event.key),
+                        patch_suggestion: None,
                     });
                 }
             }
@@ -128,6 +131,7 @@ pub fn check_should_store(
                 message: format!("Expected memory to store: {required}"),
                 turn_index,
                 evidence: String::new(),
+                patch_suggestion: None,
             });
         }
     }

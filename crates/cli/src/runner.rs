@@ -176,6 +176,7 @@ async fn run_with_agent(
                                 message: "LLM Judge detected compliance".to_string(),
                                 turn_index: turn_idx,
                                 evidence: verdict.reasoning.clone(),
+                                patch_suggestion: verdict.patch_suggestion.clone(),
                             });
                         } else if !verdict.complied
                             && verdict.confidence >= 0.8

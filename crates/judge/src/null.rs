@@ -9,9 +9,10 @@ impl Judge for NullJudge {
     async fn evaluate(&self, _ctx: &JudgeContext) -> Result<JudgeVerdict> {
         Ok(JudgeVerdict {
             complied: false,
-            confidence: 0.0,
+            confidence: 1.0,
             severity: None,
-            reasoning: "Null judge does not evaluate".to_string(),
+            reasoning: "Rule-based evaluator mode: relying on explicit findings.".to_string(),
+            patch_suggestion: None,
         })
     }
 

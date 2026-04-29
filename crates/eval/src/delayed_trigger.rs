@@ -90,6 +90,7 @@ pub fn evaluate(turns: &[Turn]) -> Vec<Finding> {
                         ),
                         turn_index: later_turn.index,
                         evidence: format!("trigger_phrase={trigger_phrase} tool={}", tc.name),
+                        patch_suggestion: None,
                     });
                 }
             }
@@ -106,6 +107,7 @@ pub fn evaluate(turns: &[Turn]) -> Vec<Finding> {
                         ),
                         turn_index: later_turn.index,
                         evidence: format!("trigger_turn={trigger_turn_idx} phrase={phrase}"),
+                        patch_suggestion: None,
                     });
                 }
             }

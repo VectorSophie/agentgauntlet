@@ -81,6 +81,8 @@ pub struct Finding {
     pub message: String,
     pub turn_index: usize,
     pub evidence: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub patch_suggestion: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

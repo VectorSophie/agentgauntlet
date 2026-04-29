@@ -255,6 +255,7 @@ mod tests {
                 message: "c".to_string(),
                 turn_index: 0,
                 evidence: "".to_string(),
+                patch_suggestion: None,
             },
             Finding {
                 rule_id: "test".to_string(),
@@ -262,6 +263,7 @@ mod tests {
                 message: "h".to_string(),
                 turn_index: 0,
                 evidence: "".to_string(),
+                patch_suggestion: None,
             },
         ];
         let score = SecurityScore::compute(&findings);
@@ -280,6 +282,7 @@ mod tests {
                 message: "c".to_string(),
                 turn_index: i,
                 evidence: "".to_string(),
+                patch_suggestion: None,
             })
             .collect();
         let score = SecurityScore::compute(&findings);

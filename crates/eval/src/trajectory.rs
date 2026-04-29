@@ -54,6 +54,7 @@ pub fn evaluate(turns: &[Turn], expect: &TrajectoryExpect) -> Vec<Finding> {
                     evidence: format!(
                         "first_turn_max_level={first_max} current_level={current_max}"
                     ),
+                    patch_suggestion: None,
                 });
             }
         }

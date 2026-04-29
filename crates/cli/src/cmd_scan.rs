@@ -311,6 +311,9 @@ pub async fn cmd_scan(opts: ScanOptions, runs_dir: &Path) -> Result<()> {
     if opts.format.to_lowercase() == "sarif" {
         let sarif_path = output_root.join("agentgauntlet.sarif");
         agentgauntlet_report::write_sarif(&sarif_results, &sarif_path)?;
+    } else if opts.format.to_lowercase() == "html" {
+        let html_path = output_root.join("agentgauntlet.html");
+        agentgauntlet_report::write_html(&sarif_results, &html_path)?;
     }
 
     println!("  {}", "Reports:".bold());
@@ -351,6 +354,16 @@ pub async fn cmd_scan(opts: ScanOptions, runs_dir: &Path) -> Result<()> {
                 format!("{}/", output_root.display())
             }
         );
+    } else if opts.format.to_lowercase() == "html" {
+        println!(
+            "    {}{}agentgauntlet.html",
+            "🌐 ".dimmed(),
+            if output_root == Path::new(".") {
+                String::new()
+            } else {
+                format!("{}/", output_root.display())
+            }
+        );
     }
 
     println!();
@@ -366,7 +379,7 @@ pub async fn cmd_scan(opts: ScanOptions, runs_dir: &Path) -> Result<()> {
     Ok(())
 }
 
-fn create_adapter(agent: &DetectedAgent) -> Box<dyn Agent> {
+pub fn create_adapter(agent: &DetectedAgent) -> Box<dyn Agent> {
     match agent {
         DetectedAgent::Ollama { base_url, model } => Box::new(OllamaAdapter::new(base_url, model)),
         DetectedAgent::LmStudio { base_url, model } => {

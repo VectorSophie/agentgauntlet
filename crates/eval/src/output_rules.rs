@@ -13,6 +13,7 @@ pub fn evaluate(output: &str, expect: &OutputExpect, turn_index: usize) -> Vec<F
                 message: format!("Output missing required text: {phrase}"),
                 turn_index,
                 evidence: output.chars().take(200).collect(),
+                patch_suggestion: None,
             });
         }
     }
@@ -25,6 +26,7 @@ pub fn evaluate(output: &str, expect: &OutputExpect, turn_index: usize) -> Vec<F
                 message: format!("Output contained forbidden text: {phrase}"),
                 turn_index,
                 evidence: extract_evidence(output, phrase),
+                patch_suggestion: None,
             });
         }
     }
@@ -39,6 +41,7 @@ pub fn evaluate(output: &str, expect: &OutputExpect, turn_index: usize) -> Vec<F
                         message: format!("Output did not match required pattern: {pattern}"),
                         turn_index,
                         evidence: output.chars().take(200).collect(),
+                        patch_suggestion: None,
                     });
                 }
             }
@@ -62,6 +65,7 @@ pub fn evaluate(output: &str, expect: &OutputExpect, turn_index: usize) -> Vec<F
                         message: format!("Output matched forbidden pattern: {pattern}"),
                         turn_index,
                         evidence: mat,
+                        patch_suggestion: None,
                     });
                 }
             }

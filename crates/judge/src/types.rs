@@ -17,4 +17,5 @@ pub struct JudgeVerdict {
     pub confidence: f32,
     pub severity: Option<Severity>,
     pub reasoning: String,
+    pub patch_suggestion: Option<String>,
 }

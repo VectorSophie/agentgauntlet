@@ -26,6 +26,7 @@ pub fn evaluate(tool_calls: &[ToolCall], expect: &ToolExpect, turn_index: usize)
                 message: format!("Forbidden tool called: {}", tc.name),
                 turn_index,
                 evidence: format!("tool={} args={}", tc.name, tc.args_json),
+                patch_suggestion: None,
             });
         }
 
@@ -37,6 +38,7 @@ pub fn evaluate(tool_calls: &[ToolCall], expect: &ToolExpect, turn_index: usize)
                 message: format!("Tool '{}' not in allowed list", tc.name),
                 turn_index,
                 evidence: format!("tool={} allowed={:?}", tc.name, expect.allowed_only),
+                patch_suggestion: None,
             });
         }
     }
@@ -51,6 +53,7 @@ pub fn evaluate(tool_calls: &[ToolCall], expect: &ToolExpect, turn_index: usize)
                 message: format!("Required tool not called: {required}"),
                 turn_index,
                 evidence: format!("called={:?}", called_names),
+                patch_suggestion: None,
             });
         }
     }
@@ -72,6 +75,7 @@ pub fn evaluate_global_forbidden(
                 message: format!("Globally forbidden tool called: {}", tc.name),
                 turn_index,
                 evidence: format!("tool={}", tc.name),
+                patch_suggestion: None,
             });
         }
     }

@@ -2,6 +2,7 @@ use anyhow::{bail, Context, Result};
 use clap::{Parser, Subcommand};
 use std::path::{Path, PathBuf};
 
+mod cmd_quick;
 mod cmd_scan;
 mod runner;
 
@@ -44,13 +45,24 @@ enum Commands {
         #[arg(long)]
         mcp: Option<String>,
 
-        /// Output format [md|sarif]
+        /// Output format [md|sarif|html]
         #[arg(long, default_value = "md")]
         format: String,
     },
 
     /// Initialize AgentGauntlet in the current directory
     Init,
+
+    /// Quick scan (top 3 scenarios, 15 seconds)
+    Quick {
+        /// Judge model
+        #[arg(long, default_value = "auto")]
+        judge: String,
+
+        /// MCP endpoint to scan
+        #[arg(long)]
+        mcp: Option<String>,
+    },
 
     /// Run built-in demo scenarios against the vulnerable agent
     Demo,
@@ -135,7 +147,12 @@ async fn main() -> Result<()> {
             )
             .await?;
         }
-        Commands::Init => cmd_init()?,
+        Commands::Quick { judge, mcp } => {
+            cmd_quick::cmd_quick(cmd_quick::QuickOptions { judge, mcp }, &runs_dir).await?;
+        }
+        Commands::Init => {
+            cmd_init()?;
+        }
         Commands::Demo => cmd_demo(&runs_dir).await?,
         Commands::Scenario {
             action: ScenarioAction::Run { scenario_file },

@@ -1,13 +1,17 @@
 pub mod agent_report;
 pub mod comparison;
 pub mod console;
+pub mod html;
 pub mod json;
 pub mod markdown;
 pub mod sarif;
+pub mod scorecard;
 
 pub use agent_report::{write_agent_report, AgentResults};
 pub use comparison::{write_comparison, AgentSummary};
+pub use html::write_html;
 pub use sarif::write_sarif;
+pub use scorecard::print_scorecard;
 
 use agentgauntlet_core::types::Run;
 use agentgauntlet_scenario::schema::Scenario;
