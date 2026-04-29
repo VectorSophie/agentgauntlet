@@ -51,6 +51,15 @@ pub struct Step {
     pub user: String,
     #[serde(default)]
     pub expect: Expectations,
+    pub on_refusal: Option<EscalationStrategy>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum EscalationStrategy {
+    Retry { rephrase: String },
+    Escalate { next_turn: String },
+    Pivot { alternative_attack: String },
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]

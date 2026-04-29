@@ -17,6 +17,8 @@ pub enum DetectedAgent {
     GeminiCli { version: String },
     /// Aider CLI (stateless per invocation).
     Aider { version: String },
+    /// MCP Agent via JSON-RPC
+    Mcp { endpoint: String },
 }
 
 impl DetectedAgent {
@@ -29,6 +31,7 @@ impl DetectedAgent {
             DetectedAgent::ClaudeCode { .. } => "Claude Code".to_string(),
             DetectedAgent::GeminiCli { .. } => "Gemini CLI".to_string(),
             DetectedAgent::Aider { .. } => "Aider".to_string(),
+            DetectedAgent::Mcp { endpoint } => format!("MCP / {endpoint}"),
         }
     }
 
@@ -45,6 +48,7 @@ impl DetectedAgent {
             DetectedAgent::ClaudeCode { .. } => "claude_code".to_string(),
             DetectedAgent::GeminiCli { .. } => "gemini_cli".to_string(),
             DetectedAgent::Aider { .. } => "aider".to_string(),
+            DetectedAgent::Mcp { endpoint } => format!("mcp_{}", sanitize(endpoint)),
         }
     }
 
@@ -57,6 +61,7 @@ impl DetectedAgent {
             DetectedAgent::ClaudeCode { .. } => "Claude Code",
             DetectedAgent::GeminiCli { .. } => "Gemini CLI",
             DetectedAgent::Aider { .. } => "Aider",
+            DetectedAgent::Mcp { .. } => "MCP",
         }
     }
 }
@@ -80,6 +85,9 @@ pub async fn detect_all() -> Vec<DetectedAgent> {
         detect_lmstudio("http://localhost:1234"),
     );
 
+    let mcp_endpoint = std::env::var("AGENTGAUNTLET_MCP_ENDPOINT").unwrap_or_else(|_| "http://localhost:3000/mcp".to_string());
+    let mcp = detect_mcp(&mcp_endpoint).await;
+
     let (opencode, claude, gemini, aider) = tokio::join!(
         detect_binary("opencode", &["--version"]),
         detect_binary("claude", &["--version"]),
@@ -91,6 +99,7 @@ pub async fn detect_all() -> Vec<DetectedAgent> {
 
     agents.extend(ollama);
     agents.extend(lmstudio);
+    agents.extend(mcp);
 
     if let Some(v) = opencode {
         agents.push(DetectedAgent::OpenCode { version: v });
@@ -138,6 +147,30 @@ async fn detect_ollama(base_url: &str) -> Vec<DetectedAgent> {
             model,
         })
         .collect()
+}
+
+async fn detect_mcp(endpoint: &str) -> Vec<DetectedAgent> {
+    let client = reqwest::Client::builder()
+        .timeout(Duration::from_secs(3))
+        .build()
+        .unwrap_or_default();
+
+    let req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "id": "probe",
+        "method": "ping"
+    });
+
+    let Ok(resp) = client.post(endpoint).json(&req).send().await else {
+        return vec![];
+    };
+    
+    if resp.status().is_success() || resp.status().as_u16() == 404 || resp.status().as_u16() == 400 {
+        // Since it responded to an HTTP POST at least, we'll tentatively count it
+        vec![DetectedAgent::Mcp { endpoint: endpoint.to_string() }]
+    } else {
+        vec![]
+    }
 }
 
 async fn detect_lmstudio(base_url: &str) -> Vec<DetectedAgent> {
@@ -285,6 +318,7 @@ pub async fn probe_all() -> Vec<ProbeResult> {
                 | DetectedAgent::ClaudeCode { version }
                 | DetectedAgent::GeminiCli { version }
                 | DetectedAgent::Aider { version } => version.clone(),
+                DetectedAgent::Mcp { endpoint } => endpoint.clone(),
                 _ => String::new(),
             };
             results.push(ProbeResult {

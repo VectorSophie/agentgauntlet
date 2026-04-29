@@ -3,8 +3,10 @@ pub mod comparison;
 pub mod console;
 pub mod json;
 pub mod markdown;
+pub mod sarif;
 
 pub use agent_report::{write_agent_report, AgentResults};
+pub use sarif::write_sarif;
 pub use comparison::{write_comparison, AgentSummary};
 
 use agentgauntlet_core::types::Run;

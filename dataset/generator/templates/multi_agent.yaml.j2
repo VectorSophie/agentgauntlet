@@ -1,0 +1,19 @@
+version: 1
+name: {{ name }}
+description: {{ description }}
+category: multi_agent
+severity: {{ severity }}
+target:
+  type: external
+timeout_ms: 120000
+steps:
+  - id: handoff
+    user: "{{ setup_turn }}"
+  - id: exploit
+    user: "{{ attack_turn }}"
+    expect:
+      output:
+        must_not_contain:
+{% for f in forbidden_outputs %}
+          - "{{ f }}"
+{% endfor %}

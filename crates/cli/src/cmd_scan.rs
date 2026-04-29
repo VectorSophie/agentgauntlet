@@ -15,6 +15,9 @@ pub struct ScanOptions {
     #[allow(dead_code)] // reserved for future --parallel N flag implementation
     pub parallel: Option<usize>,
     pub output: PathBuf,
+    pub judge: String,
+    pub mcp: Option<String>,
+    pub format: String,
 }
 
 pub async fn cmd_scan(opts: ScanOptions, runs_dir: &Path) -> Result<()> {
@@ -23,7 +26,12 @@ pub async fn cmd_scan(opts: ScanOptions, runs_dir: &Path) -> Result<()> {
     println!("  {}", "Scanning for AI agents...".bold());
     println!();
 
-    let agents = detect_all().await;
+    let mut agents = detect_all().await;
+
+    if let Some(ep) = opts.mcp {
+        // If explicitly requested, insert it.
+        agents.push(DetectedAgent::Mcp { endpoint: ep });
+    }
 
     if agents.is_empty() {
         println!(
@@ -79,6 +87,13 @@ pub async fn cmd_scan(opts: ScanOptions, runs_dir: &Path) -> Result<()> {
                     "  {}  Aider        {}",
                     "✓".green().bold(),
                     version.dimmed()
+                );
+            }
+            DetectedAgent::Mcp { endpoint } => {
+                println!(
+                    "  {}  MCP          {}",
+                    "✓".green().bold(),
+                    endpoint.dimmed()
                 );
             }
         }
@@ -142,9 +157,17 @@ pub async fn cmd_scan(opts: ScanOptions, runs_dir: &Path) -> Result<()> {
         let scenarios = Arc::clone(&scenarios);
         let runs_dir = runs_dir.to_path_buf();
         let print_lock = Arc::clone(&print_lock);
+        let judge_spec = opts.judge.clone();
 
         let handle = tokio::spawn(async move {
             let mut adapter = create_adapter(&agent_info);
+            
+            // Set AGENTGAUNTLET_JUDGE for the judge factory if not "auto"
+            if judge_spec != "auto" {
+                std::env::set_var("AGENTGAUNTLET_JUDGE", &judge_spec);
+            }
+            let judge_impl = agentgauntlet_judge::auto_judge();
+            
             let mut runs: Vec<Run> = Vec::new();
             let n = scenarios.len();
 
@@ -158,7 +181,7 @@ pub async fn cmd_scan(opts: ScanOptions, runs_dir: &Path) -> Result<()> {
                         n
                     );
                 }
-                match crate::runner::run_scenario_with_agent(scenario, &mut *adapter, &runs_dir)
+                match crate::runner::run_scenario_with_agent(scenario, &mut *adapter, Some(judge_impl.as_ref()), &runs_dir)
                     .await
                 {
                     Ok(run) => runs.push(run),
@@ -255,6 +278,8 @@ pub async fn cmd_scan(opts: ScanOptions, runs_dir: &Path) -> Result<()> {
         .collect();
 
     let mut summaries: Vec<AgentSummary<'_>> = Vec::new();
+    let mut sarif_results: Vec<AgentResults<'_>> = Vec::new();
+
     for ((display_name, file_id), (_, runs)) in agent_strings.iter().zip(all_results.iter()) {
         let results = AgentResults {
             display_name,
@@ -268,9 +293,20 @@ pub async fn cmd_scan(opts: ScanOptions, runs_dir: &Path) -> Result<()> {
             file_id,
             runs,
         });
+
+        sarif_results.push(AgentResults {
+            display_name,
+            file_id,
+            runs,
+        });
     }
 
     write_comparison(&summaries, output_root, &archive_dir)?;
+
+    if opts.format.to_lowercase() == "sarif" {
+        let sarif_path = output_root.join("agentgauntlet.sarif");
+        agentgauntlet_report::write_sarif(&sarif_results, &sarif_path)?;
+    }
 
     println!("  {}", "Reports:".bold());
     for (agent_info, _) in &all_results {
@@ -299,6 +335,19 @@ pub async fn cmd_scan(opts: ScanOptions, runs_dir: &Path) -> Result<()> {
         "🗂 ".dimmed(),
         archive_dir.display().to_string().dimmed()
     );
+
+    if opts.format.to_lowercase() == "sarif" {
+        println!(
+            "    {}{}agentgauntlet.sarif",
+            "📄 ".dimmed(),
+            if output_root == Path::new(".") {
+                String::new()
+            } else {
+                format!("{}/", output_root.display())
+            }
+        );
+    }
+    
     println!();
 
     // ── 7. Share prompt ───────────────────────────────────────────────────────
@@ -322,6 +371,7 @@ fn create_adapter(agent: &DetectedAgent) -> Box<dyn Agent> {
         DetectedAgent::ClaudeCode { .. } => Box::new(StatelessCliAdapter::claude_code()),
         DetectedAgent::GeminiCli { .. } => Box::new(StatelessCliAdapter::gemini()),
         DetectedAgent::Aider { .. } => Box::new(StatelessCliAdapter::aider()),
+        DetectedAgent::Mcp { endpoint } => Box::new(agentgauntlet_adapters::McpAdapter::new(endpoint.clone())),
     }
 }
 

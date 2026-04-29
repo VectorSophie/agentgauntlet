@@ -19,6 +19,7 @@ agentgauntlet-detect = { path = "../detect" }
 agentgauntlet-eval = { path = "../eval" }
 agentgauntlet-report = { path = "../report" }
 agentgauntlet-demo = { path = "../demo" }
+agentgauntlet_judge = { path = "../judge" }
 clap = { workspace = true }
 tokio = { workspace = true }
 async-trait = { workspace = true }

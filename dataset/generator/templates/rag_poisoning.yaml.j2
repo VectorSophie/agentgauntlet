@@ -1,0 +1,27 @@
+version: 1
+name: {{ name }}
+description: {{ description }}
+category: rag_poisoning
+severity: {{ severity }}
+target:
+  type: external
+timeout_ms: 120000
+steps:
+  - id: setup
+    user: "{{ setup_turn }}"
+  - id: poison
+    user: "{{ attack_turn }}"
+    expect:
+      output:
+        must_not_contain:
+{% for f in forbidden_outputs %}
+          - "{{ f }}"
+{% endfor %}
+  - id: trigger
+    user: "{{ trigger_turn }}"
+    expect:
+      output:
+        must_not_contain:
+{% for f in forbidden_outputs %}
+          - "{{ f }}"
+{% endfor %}

@@ -23,7 +23,26 @@
       "Bash(git init *)",
       "Bash(git remote *)",
       "Bash(git add *)",
-      "Bash(git commit -m ' *)"
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "Bash(git tag *)",
+      "Bash(python import_advbench.py)",
+      "Bash(python import_toolbench.py)",
+      "Bash(python -c \"import json,sys; d=json.load\\(sys.stdin\\); [print\\(x['name'], x.get\\('type',''\\)\\) for x in \\(d if isinstance\\(d,list\\) else []\\)]\")",
+      "Bash(python -c \"import json,sys; body=sys.stdin.read\\(\\); start=body.find\\('['\\); d=json.loads\\(body[start:]\\) if start>=0 else []; [print\\(x['name'],x.get\\('type'\\)\\) for x in d]\")",
+      "Bash(python -c \"import json,sys; d=json.load\\(sys.stdin\\); [print\\(x['name'],x.get\\('type'\\)\\) for x in \\(d if isinstance\\(d,list\\) else []\\)]\")",
+      "Bash(python -c \"import json,sys; d=json.load\\(sys.stdin\\); [print\\(x['name'],x.get\\('download_url',''\\)\\) for x in \\(d if isinstance\\(d,list\\) else []\\)]\")",
+      "Bash(python -c \"import json,sys; d=json.load\\(sys.stdin\\); items=d if isinstance\\(d,list\\) else list\\(d.values\\(\\)\\)[:3]; [print\\(json.dumps\\(x, indent=2\\)[:300]\\) for x in items[:2]]\")",
+      "Bash(python -c \"import json,sys; d=json.load\\(sys.stdin\\); items=d if isinstance\\(d,list\\) else list\\(d.values\\(\\)\\); print\\('type:', type\\(d\\).__name__, 'len:', len\\(items\\)\\); item=items[0]; print\\('keys:', list\\(item.keys\\(\\)\\)\\)\")",
+      "Bash(python -c \"import json,sys; d=json.load\\(sys.stdin\\); items=d if isinstance\\(d,list\\) else list\\(d.values\\(\\)\\); print\\('len:', len\\(items\\)\\); [print\\(x.get\\('query',''\\)[:100]\\) for x in items[:5]]\")",
+      "Bash(python -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(type\\(d\\), str\\(d\\)[:300]\\)\")",
+      "Bash(python -c \"import json,sys; d=json.load\\(sys.stdin\\); [print\\(x.get\\('query',''\\)\\) for x in \\(d if isinstance\\(d,list\\) else []\\)]\")",
+      "Bash(python -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(list\\(d.keys\\(\\)\\)[:10]\\)\")",
+      "Bash(python -c \"import json,sys; d=json.load\\(sys.stdin\\); items=d.get\\('items',[]\\); [print\\(x['full_name'],x['html_url']\\) for x in items[:5]]\")",
+      "Bash(python -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(str\\(d\\)[:500]\\)\")",
+      "Bash(python import_memoryagentbench.py)",
+      "Bash(pip install *)",
+      "Bash(python generate_scenarios.py --count-per-category 30 --out ../generated)"
     ]
   }
 }

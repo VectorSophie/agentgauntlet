@@ -35,6 +35,18 @@ enum Commands {
         /// Directory to write AGENTGAUNTLET_*.md reports (default: current dir)
         #[arg(long, default_value = ".")]
         output: PathBuf,
+
+        /// Judge model [auto|none|claude|ollama:model|lmstudio:model] (default: auto)
+        #[arg(long, default_value = "auto")]
+        judge: String,
+
+        /// MCP endpoint to scan
+        #[arg(long)]
+        mcp: Option<String>,
+
+        /// Output format [md|sarif]
+        #[arg(long, default_value = "md")]
+        format: String,
     },
 
     /// Initialize AgentGauntlet in the current directory
@@ -105,6 +117,9 @@ async fn main() -> Result<()> {
             all,
             parallel,
             output,
+            judge,
+            mcp,
+            format,
         } => {
             cmd_scan::cmd_scan(
                 cmd_scan::ScanOptions {
@@ -112,6 +127,9 @@ async fn main() -> Result<()> {
                     select_all: all,
                     parallel,
                     output,
+                    judge,
+                    mcp,
+                    format,
                 },
                 &runs_dir,
             )
@@ -263,7 +281,7 @@ async fn cmd_scenario_run(scenario_file: &Path, runs_dir: &Path) -> Result<()> {
     println!("Severity: {}", scenario.severity);
     println!();
 
-    let run = runner::run_scenario(&scenario, runs_dir).await?;
+    let run = runner::run_scenario(&scenario, None, runs_dir).await?;
     let run_dir = runs_dir.join(&run.id);
     agentgauntlet_report::console::print_report(&run, &run_dir);
 
@@ -301,7 +319,7 @@ async fn cmd_test(scenarios_dir: &Path, runs_dir: &Path, ci: bool, fail_on: &str
             eprintln!("[ERROR] Invalid scenario {}: {}", path.display(), e);
             continue;
         }
-        let run = runner::run_scenario(&scenario, runs_dir).await?;
+        let run = runner::run_scenario(&scenario, None, runs_dir).await?;
         agentgauntlet_report::console::print_summary_line(&scenario.name, &run);
         all_runs.push(run);
     }
