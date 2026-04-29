@@ -41,7 +41,7 @@ async fn demo_score_below_threshold() {
         total_score += run.score.score as u32;
     }
 
-    let avg = if count > 0 { total_score / count } else { 100 };
+    let avg = total_score.checked_div(count).unwrap_or(100);
     assert!(
         avg < 70,
         "Average score for vulnerable agent should be below 70, got {}",
