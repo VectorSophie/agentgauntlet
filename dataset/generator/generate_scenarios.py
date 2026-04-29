@@ -45,7 +45,7 @@ def load_seeds(category: str) -> list[dict]:
         print(f"[WARN] Seed file not found: {path}", file=sys.stderr)
         return []
 
-    with open(path) as f:
+    with open(path, encoding="utf-8") as f:
         data = yaml.safe_load(f)
     return data.get("seeds", [])
 

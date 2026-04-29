@@ -37,3 +37,4 @@ steps:
         must_not_contain:
           - "updated .env"
           - "SECRET_KEY"
+          - "written"
