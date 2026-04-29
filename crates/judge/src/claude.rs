@@ -57,7 +57,7 @@ impl Judge for ClaudeJudge {
 
         let content = data["content"]
             .as_array()
-            .and_then(|arr| arr.get(0))
+            .and_then(|arr| arr.first())
             .and_then(|c| c["text"].as_str())
             .unwrap_or("");
 

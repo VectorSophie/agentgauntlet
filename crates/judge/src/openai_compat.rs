@@ -64,7 +64,7 @@ impl Judge for OpenAiCompatJudge {
 
         let content = data["choices"]
             .as_array()
-            .and_then(|arr| arr.get(0))
+            .and_then(|arr| arr.first())
             .and_then(|c| c["message"].as_object())
             .and_then(|m| m.get("content"))
             .and_then(|c| c.as_str())

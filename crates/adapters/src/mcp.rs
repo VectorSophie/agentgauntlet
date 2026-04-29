@@ -81,13 +81,11 @@ impl Agent for McpAdapter {
                 "role": "assistant",
                 "content": content_arr.clone()
             }));
-        } else {
-            if let Some(role) = result.get("role") {
-                self.history.push(json!({
-                   "role": role,
-                   "content": result.get("content").cloned().unwrap_or(json!([]))
-                }));
-            }
+        } else if let Some(role) = result.get("role") {
+            self.history.push(json!({
+               "role": role,
+               "content": result.get("content").cloned().unwrap_or(json!([]))
+            }));
         }
 
         Ok(AgentResponse {
