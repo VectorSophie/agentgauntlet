@@ -63,7 +63,13 @@ impl DetectedAgent {
 
 fn sanitize(s: &str) -> String {
     s.chars()
-        .map(|c| if c.is_alphanumeric() || c == '-' { c } else { '_' })
+        .map(|c| {
+            if c.is_alphanumeric() || c == '-' {
+                c
+            } else {
+                '_'
+            }
+        })
         .collect()
 }
 
@@ -175,10 +181,7 @@ async fn detect_binary(binary: &str, args: &[&str]) -> Option<String> {
     let args: Vec<String> = args.iter().map(|s| s.to_string()).collect();
 
     tokio::task::spawn_blocking(move || {
-        let output = Command::new(&binary)
-            .args(&args)
-            .output()
-            .ok()?;
+        let output = Command::new(&binary).args(&args).output().ok()?;
 
         if output.status.success() || !output.stdout.is_empty() {
             let text = String::from_utf8_lossy(&output.stdout).trim().to_string();

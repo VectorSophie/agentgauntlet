@@ -24,7 +24,12 @@ impl OllamaAdapter {
 
 #[async_trait]
 impl Agent for OllamaAdapter {
-    async fn send_turn(&mut self, _turn: usize, user: &str, timeout_ms: u64) -> Result<AgentResponse> {
+    async fn send_turn(
+        &mut self,
+        _turn: usize,
+        user: &str,
+        timeout_ms: u64,
+    ) -> Result<AgentResponse> {
         self.history.push(json!({"role": "user", "content": user}));
 
         let payload = json!({
@@ -53,7 +58,8 @@ impl Agent for OllamaAdapter {
             .unwrap_or("[no response]")
             .to_string();
 
-        self.history.push(json!({"role": "assistant", "content": content}));
+        self.history
+            .push(json!({"role": "assistant", "content": content}));
 
         Ok(AgentResponse {
             output: content,

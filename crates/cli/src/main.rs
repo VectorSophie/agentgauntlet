@@ -100,16 +100,28 @@ async fn main() -> Result<()> {
     let runs_dir = config.output_dir.clone();
 
     match cli.command {
-        Commands::Scan { dir, all, parallel, output } => {
+        Commands::Scan {
+            dir,
+            all,
+            parallel,
+            output,
+        } => {
             cmd_scan::cmd_scan(
-                cmd_scan::ScanOptions { scenario_dir: dir, select_all: all, parallel, output },
+                cmd_scan::ScanOptions {
+                    scenario_dir: dir,
+                    select_all: all,
+                    parallel,
+                    output,
+                },
                 &runs_dir,
             )
             .await?;
         }
         Commands::Init => cmd_init()?,
         Commands::Demo => cmd_demo(&runs_dir).await?,
-        Commands::Scenario { action: ScenarioAction::Run { scenario_file } } => {
+        Commands::Scenario {
+            action: ScenarioAction::Run { scenario_file },
+        } => {
             cmd_scenario_run(&scenario_file, &runs_dir).await?;
         }
         Commands::Test { dir, ci, fail_on } => {
@@ -117,7 +129,9 @@ async fn main() -> Result<()> {
             cmd_test(&scenarios_dir, &runs_dir, ci, &fail_on).await?;
         }
         Commands::Replay { run_id } => cmd_replay(&runs_dir, &run_id)?,
-        Commands::Report { action: ReportAction::Show { run_id } } => {
+        Commands::Report {
+            action: ReportAction::Show { run_id },
+        } => {
             cmd_report_show(&runs_dir, &run_id)?;
         }
         Commands::Version => {
@@ -213,10 +227,22 @@ async fn cmd_demo(runs_dir: &Path) -> Result<()> {
     println!("Security Score:");
     println!("  Average Score: {avg_score}/100");
     println!("  Total Findings: {total_findings}");
-    println!("  Critical: {}", all_runs.iter().map(|r| r.score.critical).sum::<usize>());
-    println!("  High:     {}", all_runs.iter().map(|r| r.score.high).sum::<usize>());
-    println!("  Medium:   {}", all_runs.iter().map(|r| r.score.medium).sum::<usize>());
-    println!("  Low:      {}", all_runs.iter().map(|r| r.score.low).sum::<usize>());
+    println!(
+        "  Critical: {}",
+        all_runs.iter().map(|r| r.score.critical).sum::<usize>()
+    );
+    println!(
+        "  High:     {}",
+        all_runs.iter().map(|r| r.score.high).sum::<usize>()
+    );
+    println!(
+        "  Medium:   {}",
+        all_runs.iter().map(|r| r.score.medium).sum::<usize>()
+    );
+    println!(
+        "  Low:      {}",
+        all_runs.iter().map(|r| r.score.low).sum::<usize>()
+    );
     println!();
     println!("Report written to: {}", runs_dir.display());
     println!();
@@ -254,7 +280,10 @@ async fn cmd_test(scenarios_dir: &Path, runs_dir: &Path, ci: bool, fail_on: &str
         return Ok(());
     }
 
-    println!("AgentGauntlet Test Run — {} scenarios", scenario_files.len());
+    println!(
+        "AgentGauntlet Test Run — {} scenarios",
+        scenario_files.len()
+    );
     println!("{}", "=".repeat(50));
     println!();
 
@@ -285,15 +314,20 @@ async fn cmd_test(scenarios_dir: &Path, runs_dir: &Path, ci: bool, fail_on: &str
         .filter(|r| r.score.critical > 0 || r.score.high > 0)
         .count();
 
-    println!("Results: {}/{} passed, {} failed", total - failed, total, failed);
+    println!(
+        "Results: {}/{} passed, {} failed",
+        total - failed,
+        total,
+        failed
+    );
 
     if ci {
         let should_fail = all_runs.iter().any(|r| match fail_on {
-            "low"      => !r.findings.is_empty(),
-            "medium"   => r.score.medium > 0 || r.score.high > 0 || r.score.critical > 0,
-            "high"     => r.score.high > 0 || r.score.critical > 0,
+            "low" => !r.findings.is_empty(),
+            "medium" => r.score.medium > 0 || r.score.high > 0 || r.score.critical > 0,
+            "high" => r.score.high > 0 || r.score.critical > 0,
             "critical" => r.score.critical > 0,
-            _          => r.score.high > 0 || r.score.critical > 0,
+            _ => r.score.high > 0 || r.score.critical > 0,
         });
         if should_fail {
             bail!("CI failure threshold reached (fail-on: {fail_on})");
@@ -315,14 +349,42 @@ fn cmd_replay(runs_dir: &Path, run_id: &str) -> Result<()> {
 
     let content = std::fs::read_to_string(&trace_path)?;
     for line in content.lines() {
-        if line.trim().is_empty() { continue; }
-        let Ok(val) = serde_json::from_str::<serde_json::Value>(line) else { continue };
+        if line.trim().is_empty() {
+            continue;
+        }
+        let Ok(val) = serde_json::from_str::<serde_json::Value>(line) else {
+            continue;
+        };
         match val["type"].as_str().unwrap_or("") {
-            "user"         => println!("[Turn {}] User: {}",   val["turn"].as_u64().unwrap_or(0) + 1, val["content"].as_str().unwrap_or("")),
-            "agent_output" => println!("[Turn {}] Agent: {}",  val["turn"].as_u64().unwrap_or(0) + 1, val["content"].as_str().unwrap_or("")),
-            "tool_call"    => println!("[Turn {}] Tool: {}({})", val["turn"].as_u64().unwrap_or(0) + 1, val["name"].as_str().unwrap_or(""), val["args"]),
-            "finding"      => println!("[Turn {}] FINDING [{}]: {}", val["turn"].as_u64().unwrap_or(0) + 1, val["severity"].as_str().unwrap_or(""), val["rule_id"].as_str().unwrap_or("")),
-            "run_completed" => { println!(); println!("Run completed. Score: {}/100", val["score"].as_u64().unwrap_or(0)); }
+            "user" => println!(
+                "[Turn {}] User: {}",
+                val["turn"].as_u64().unwrap_or(0) + 1,
+                val["content"].as_str().unwrap_or("")
+            ),
+            "agent_output" => println!(
+                "[Turn {}] Agent: {}",
+                val["turn"].as_u64().unwrap_or(0) + 1,
+                val["content"].as_str().unwrap_or("")
+            ),
+            "tool_call" => println!(
+                "[Turn {}] Tool: {}({})",
+                val["turn"].as_u64().unwrap_or(0) + 1,
+                val["name"].as_str().unwrap_or(""),
+                val["args"]
+            ),
+            "finding" => println!(
+                "[Turn {}] FINDING [{}]: {}",
+                val["turn"].as_u64().unwrap_or(0) + 1,
+                val["severity"].as_str().unwrap_or(""),
+                val["rule_id"].as_str().unwrap_or("")
+            ),
+            "run_completed" => {
+                println!();
+                println!(
+                    "Run completed. Score: {}/100",
+                    val["score"].as_u64().unwrap_or(0)
+                );
+            }
             _ => {}
         }
     }

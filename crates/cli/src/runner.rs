@@ -51,12 +51,19 @@ pub async fn run_scenario_with_agent(
     run_with_agent(scenario, agent, runs_dir).await
 }
 
-async fn run_with_agent(scenario: &Scenario, agent: &mut dyn Agent, runs_dir: &Path) -> Result<Run> {
+async fn run_with_agent(
+    scenario: &Scenario,
+    agent: &mut dyn Agent,
+    runs_dir: &Path,
+) -> Result<Run> {
     let run_id = Uuid::new_v4().to_string();
     let run_dir = runs_dir.join(&run_id);
     std::fs::create_dir_all(&run_dir)?;
 
-    std::fs::write(run_dir.join("scenario.yaml"), serde_yaml::to_string(scenario)?)?;
+    std::fs::write(
+        run_dir.join("scenario.yaml"),
+        serde_yaml::to_string(scenario)?,
+    )?;
 
     let mut run = Run::new(run_id.clone(), scenario.name.clone());
 
@@ -71,7 +78,10 @@ async fn run_with_agent(scenario: &Scenario, agent: &mut dyn Agent, runs_dir: &P
             &serde_json::json!({"type": "turn_started", "turn": i, "step_id": step.id}),
         )?;
 
-        let response = match agent.send_turn(i + 1, &step.user, scenario.timeout_ms).await {
+        let response = match agent
+            .send_turn(i + 1, &step.user, scenario.timeout_ms)
+            .await
+        {
             Ok(r) => r,
             Err(e) => AgentResponse {
                 output: format!("[ERROR] {e}"),

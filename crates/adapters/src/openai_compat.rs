@@ -31,7 +31,12 @@ impl OpenAiCompatAdapter {
 
 #[async_trait]
 impl Agent for OpenAiCompatAdapter {
-    async fn send_turn(&mut self, _turn: usize, user: &str, timeout_ms: u64) -> Result<AgentResponse> {
+    async fn send_turn(
+        &mut self,
+        _turn: usize,
+        user: &str,
+        timeout_ms: u64,
+    ) -> Result<AgentResponse> {
         self.history.push(json!({"role": "user", "content": user}));
 
         let payload = json!({
@@ -63,7 +68,8 @@ impl Agent for OpenAiCompatAdapter {
             .unwrap_or("[no response]")
             .to_string();
 
-        self.history.push(json!({"role": "assistant", "content": content}));
+        self.history
+            .push(json!({"role": "assistant", "content": content}));
 
         Ok(AgentResponse {
             output: content,

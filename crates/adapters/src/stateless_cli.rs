@@ -101,7 +101,12 @@ impl StatelessCliAdapter {
 
 #[async_trait]
 impl Agent for StatelessCliAdapter {
-    async fn send_turn(&mut self, _turn: usize, user: &str, timeout_ms: u64) -> Result<AgentResponse> {
+    async fn send_turn(
+        &mut self,
+        _turn: usize,
+        user: &str,
+        timeout_ms: u64,
+    ) -> Result<AgentResponse> {
         let prompt = self.build_prompt(user);
         let binary = self.binary.clone();
         let pre_args = self.pre_args.clone();
