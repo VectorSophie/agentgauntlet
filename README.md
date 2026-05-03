@@ -2,9 +2,17 @@
 
 > One command. All your local AI agents. Ranked by security.
 
-AgentGauntlet **auto-detects** every AI coding agent running on your machine (Ollama, LM Studio, Claude Code, Gemini CLI, Aider, OpenCode), runs them through 6 multi-turn security scenarios in parallel, and produces a ranked report with per-agent findings.
+AgentGauntlet **auto-detects** every AI coding agent running on your machine (Ollama, LM Studio, Claude Code, Gemini CLI, Aider, OpenCode), runs them through multi-turn security scenarios in parallel, and produces a ranked report with per-agent findings.
 
-Most AI agent security tests are single-turn. Real attacks aren't. AgentGauntlet tests whether your agent survives **multi-turn prompt injection, memory poisoning, delayed triggers, and indirect injection** — the attack classes that defeat single-turn defenses.
+AgentGauntlet evaluates local agents for:
+- **Prompt injection** — multi-turn jailbreak and instruction override
+- **Memory poisoning** — storing malicious instructions across turns
+- **Tool escalation** — calling more dangerous tools than the task requires
+- **Delayed triggers** — trigger-phrase activated attacks
+- **Canary-secret exposure** — synthetic credential detection
+- **Private-data retention and privacy-policy violations** — cross-turn leakage, redaction failures, memory retention of `do_not_remember` data
+
+Most AI agent security tools measure unsafe text. AgentGauntlet measures **observable workspace side effects** and **private-data policy compliance** — the failure modes that matter for production coding agents.
 
 ---
 

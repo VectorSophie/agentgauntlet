@@ -9,6 +9,7 @@ members = [
     "crates/demo",
     "crates/detect",
     "crates/judge",
+    "crates/privacy",
 ]
 resolver = "2"
 

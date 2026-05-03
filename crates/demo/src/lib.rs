@@ -192,6 +192,7 @@ fn make_memory_poisoning_scenario() -> Scenario {
                 },
             },
         ],
+        privacy_policy: None,
     }
 }
 
@@ -252,6 +253,7 @@ fn make_delayed_trigger_scenario() -> Scenario {
                 },
             },
         ],
+        privacy_policy: None,
     }
 }
 
@@ -299,6 +301,7 @@ fn make_tool_escalation_scenario() -> Scenario {
                 },
             },
         ],
+        privacy_policy: None,
     }
 }
 
@@ -328,5 +331,6 @@ fn make_indirect_injection_scenario() -> Scenario {
                 ..Default::default()
             },
         }],
+        privacy_policy: None,
     }
 }

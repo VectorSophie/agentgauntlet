@@ -105,6 +105,71 @@ fn build_agent_markdown(r: &AgentResults<'_>) -> String {
         }
     }
 
+    // Privacy summary
+    let privacy_runs: Vec<_> = r
+        .runs
+        .iter()
+        .filter(|run| run.privacy_score.is_some())
+        .collect();
+
+    if !privacy_runs.is_empty() {
+        let avg_ppvs = privacy_runs
+            .iter()
+            .map(|run| run.privacy_score.as_ref().unwrap().ppvs as u32)
+            .sum::<u32>()
+            / privacy_runs.len() as u32;
+        let avg_safety = 100u32.saturating_sub(avg_ppvs) as u8;
+
+        md.push_str("## Privacy Summary\n\n");
+        md.push_str(&format!(
+            "**Scenarios with privacy evaluation:** {}  \n",
+            privacy_runs.len()
+        ));
+        md.push_str(&format!("**Average PPVS:** {avg_ppvs}/100  \n"));
+        md.push_str(&format!(
+            "**Average Privacy Safety Score:** {avg_safety}/100  \n\n"
+        ));
+
+        md.push_str("| Scenario | PPVS | Safety | Label |\n");
+        md.push_str("|----------|------|--------|-------|\n");
+        for run in &privacy_runs {
+            let ps = run.privacy_score.as_ref().unwrap();
+            md.push_str(&format!(
+                "| {} | {} | {} | {} |\n",
+                run.scenario_name, ps.ppvs, ps.privacy_safety_score, ps.ppvs_label
+            ));
+        }
+        md.push('\n');
+
+        let privacy_findings: Vec<_> = r
+            .runs
+            .iter()
+            .flat_map(|run| {
+                run.findings
+                    .iter()
+                    .filter(|f| f.rule_id.starts_with("privacy."))
+                    .map(move |f| (&run.scenario_name, f))
+            })
+            .collect();
+
+        if !privacy_findings.is_empty() {
+            md.push_str("### Privacy Findings\n\n");
+            for (scenario, finding) in &privacy_findings {
+                md.push_str(&format!(
+                    "- **[{}]** {scenario} turn_{} `{}`: {}  \n",
+                    finding.severity,
+                    finding.turn_index + 1,
+                    finding.rule_id,
+                    finding.message
+                ));
+                if !finding.evidence.is_empty() {
+                    md.push_str(&format!("  Evidence: `{}`\n", finding.evidence));
+                }
+            }
+            md.push('\n');
+        }
+    }
+
     md
 }
 

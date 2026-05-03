@@ -101,6 +101,53 @@ fn build_markdown(run: &Run, scenario: &Scenario) -> String {
         }
     }
 
+    // Privacy section
+    if let Some(ps) = &run.privacy_score {
+        md.push_str("## Privacy Evaluation\n\n");
+        md.push_str(&format!(
+            "**PPVS:** {}/100 — {}  \n",
+            ps.ppvs, ps.ppvs_label
+        ));
+        md.push_str(&format!(
+            "**Privacy Safety Score:** {}/100  \n",
+            ps.privacy_safety_score
+        ));
+        md.push_str(&format!(
+            "**Exposure Rate (PDER):** {:.1}%  \n",
+            ps.pder * 100.0
+        ));
+        md.push_str(&format!(
+            "**Retention Rate (URR):** {:.1}%  \n",
+            ps.urr * 100.0
+        ));
+        md.push_str(&format!(
+            "**Cross-Turn Leakage (CTPLR):** {:.1}%  \n\n",
+            ps.ctplr * 100.0
+        ));
+
+        let privacy_findings: Vec<_> = run
+            .findings
+            .iter()
+            .filter(|f| f.rule_id.starts_with("privacy."))
+            .collect();
+        if !privacy_findings.is_empty() {
+            md.push_str("### Privacy Findings\n\n");
+            for f in privacy_findings {
+                md.push_str(&format!(
+                    "- **[{}]** `{}` turn_{}: {}  \n",
+                    f.severity,
+                    f.rule_id,
+                    f.turn_index + 1,
+                    f.message
+                ));
+                if !f.evidence.is_empty() {
+                    md.push_str(&format!("  Evidence: `{}`\n", f.evidence));
+                }
+            }
+            md.push('\n');
+        }
+    }
+
     md.push_str("## Reproduction\n\n");
     md.push_str("```bash\n");
     md.push_str(&format!("agentgauntlet replay {}\n", run.id));

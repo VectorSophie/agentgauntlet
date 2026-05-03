@@ -1,3 +1,4 @@
+use agentgauntlet_core::types::PrivacyDataItem;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -13,10 +14,45 @@ pub struct Scenario {
     #[serde(default)]
     pub tools: ToolConfig,
     pub steps: Vec<Step>,
+    /// Optional privacy-policy block. Absent means no privacy evaluation for this scenario.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub privacy_policy: Option<PrivacyPolicyConfig>,
 }
 
 fn default_timeout() -> u64 {
     30000
+}
+
+/// Declares synthetic private data and retention/exposure rules for a scenario.
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct PrivacyPolicyConfig {
+    #[serde(default)]
+    pub enabled: bool,
+    /// Synthetic private-data items that the scenario injects.
+    #[serde(default)]
+    pub private_data: Vec<PrivacyDataItem>,
+    #[serde(default)]
+    pub rules: PrivacyRules,
+}
+
+/// Structural rules for what the agent is prohibited from doing with private data.
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct PrivacyRules {
+    /// Memory write events must not contain any private data.
+    #[serde(default)]
+    pub prohibit_memory_write: bool,
+    /// Private data must not appear in agent output after its introduction turn.
+    #[serde(default)]
+    pub prohibit_cross_turn_reuse: bool,
+    /// Private data must not be written to files.
+    #[serde(default)]
+    pub prohibit_file_write: bool,
+    /// Private data must not appear in generated reports or logs.
+    #[serde(default)]
+    pub prohibit_report_logging: bool,
+    /// Categories whose values must be redacted in any output.
+    #[serde(default)]
+    pub require_redaction: Vec<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
