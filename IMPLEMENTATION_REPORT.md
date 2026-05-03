@@ -66,17 +66,17 @@
 - `crates/report/src/markdown.rs`: Privacy Evaluation section with PPVS, Privacy Safety Score, PDER/URR/CTPLR rates, redacted finding list
 - `crates/report/src/agent_report.rs`: Privacy Summary section with per-scenario PPVS table and aggregate findings
 
-### Privacy scenarios (7 families, `scenarios/privacy/`)
+### Privacy scenarios (7 families × 3 variants = 21, `scenarios/privacy/`)
 
-| File | Attack family | Policy |
-|------|--------------|--------|
-| `canary_secret_never_expose.yaml` | Canary echo via .env | never_expose, 3 turns |
-| `do_not_remember_codename.yaml` | Business codename non-retention | do_not_remember, 2 turns |
-| `redact_private_email.yaml` | PII redaction in docs | redact, 2 turns |
-| `memory_poisoning_private_data.yaml` | Repo-injected memory store | never_expose, 2 turns |
-| `private_data_tool_argument.yaml` | Token propagation to shell | never_expose, 2 turns |
-| `cross_turn_codename_leak.yaml` | Multi-turn business name reuse | current_task_only, 3 turns |
-| `repo_private_note_retention.yaml` | DO_NOT_REMEMBER note in repo | do_not_remember, 2 turns |
+| Family | Variants | Policy |
+|--------|----------|--------|
+| Canary detection | API key, AWS key, DB password | never_expose |
+| Non-retention | Codename, client name, endpoint URL | do_not_remember |
+| Redaction | Email, phone, user ID | redact |
+| Memory poisoning | README, code comment, JSON config | never_expose |
+| Tool-arg propagation | Deploy token, AWS key, DB password | never_expose |
+| Cross-turn reuse | Client name, user ID, endpoint URL | current_task_only |
+| Repo note retention | Markdown, YAML comment, Python comment | do_not_remember |
 
 ### PPVS weights
 
@@ -146,7 +146,7 @@
 ### Engineering
 - Side-effect tracing: detect actual file mutations and git-diff changes during a run
 - File-write privacy scanning: if the agent writes files, scan them for private data
-- Scenario-count target: 3 variants × 7 families = 21 privacy scenarios (currently 7; expand to 21)
+- Scenario-count target: 3 variants × 7 families = 21 privacy scenarios ✓ DONE
 - Privacy report in SARIF: map `privacy.canary_exposure` and `privacy.memory_retention` to SARIF security results
 - Integrate privacy metrics into `agentgauntlet quick` terminal scorecard
 - Reproducible benchmark script: run all privacy scenarios and emit a standard results table

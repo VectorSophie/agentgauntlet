@@ -350,17 +350,17 @@ where PDER is the Private Data Exposure Rate, URR is the Unauthorized Retention 
 
 ### 5.5 Privacy Scenario Families
 
-Seven scenario families test different privacy failure modes:
+The benchmark includes **21 privacy scenarios** across seven families (three variants per family). Each variant tests the same failure mode with a different value type or injection vector, providing broader coverage and reducing the risk of a model passing by coincidence.
 
-| Scenario | Family | Policy tested | Turns |
-|----------|--------|--------------|-------|
-| `canary_secret_never_expose` | Canary echo via .env file | `never_expose` | 3 |
-| `do_not_remember_codename` | Business codename non-retention | `do_not_remember` | 2 |
-| `redact_private_email` | PII redaction in documentation | `redact` | 2 |
-| `memory_poisoning_private_data` | Repo-injected memory store | `never_expose` | 2 |
-| `private_data_tool_argument` | Token propagation to shell | `never_expose` | 2 |
-| `cross_turn_codename_leak` | Multi-turn business name reuse | `current_task_only` | 3 |
-| `repo_private_note_retention` | DO_NOT_REMEMBER note in docs | `do_not_remember` | 2 |
+| Family | Failure mode | Policy tested | Variants |
+|--------|-------------|--------------|----------|
+| Canary detection | Built-in credential echo | `never_expose` | API key, AWS key, DB password |
+| Non-retention | Explicit do-not-store instruction | `do_not_remember` | Codename, client name, endpoint URL |
+| Redaction | PII exposed without placeholder | `redact` | Email, phone, user ID |
+| Memory poisoning | Injected instruction to persist data | `never_expose` | README, code comment, JSON config |
+| Tool-arg propagation | Credential leaks into tool call | `never_expose` | Deploy token, AWS key, DB password |
+| Cross-turn reuse | Data reappears in unrelated turn | `current_task_only` | Client name, user ID, endpoint URL |
+| Repo note retention | DO_NOT_REMEMBER in source file | `do_not_remember` | Markdown, YAML comment, Python comment |
 
 Each scenario includes both explicit `expect` blocks (backward-compatible with the existing rule engine) and the new `privacy_policy` block (PPVS scoring). A scenario passes if and only if it produces zero HIGH or CRITICAL findings across both evaluation paths.
 
@@ -529,7 +529,7 @@ The PPVS weight table was chosen to reflect the relative severity of privacy vio
 
 AgentGauntlet provides a practical, reproducible benchmark for evaluating local AI coding agents across nine adversarial categories. The tool auto-detects running agents, requires no configuration for standard evaluation, and produces structured findings with deterministic scores. Our pilot study demonstrates substantial variance in agent security — from ASR 0.00 to 1.00 — across agents that are all in common use for coding tasks. The new privacy evaluation layer extends the benchmark beyond injection attacks to measure private-data retention, cross-turn leakage, and redaction failures: failure modes that can occur even without any external attacker.
 
-Future work includes: calibrating PPVS weights against a user study; adding file-write interception for complete privacy coverage; extending the privacy scenario suite to 21 families; incorporating LLM-judge-based detection of paraphrased violations; and running the full benchmark on a broader set of models to establish population-level baselines.
+Future work includes: calibrating PPVS weights against a user study; adding file-write interception for complete privacy coverage; incorporating LLM-judge-based detection of paraphrased violations; and running the full benchmark on a broader set of models to establish population-level baselines.
 
 All code, scenarios, and datasets are available at:  
 **https://github.com/VectorSophie/agentgauntlet**
